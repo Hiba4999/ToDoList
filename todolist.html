@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+
+    <style>
+        body{
+            font-family:"Poppins", sans-serif;
+              background-color: #f3f6fd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: black;
+            margin:0;
+        }
+        .container{
+            width: 350px;
+           background: #ffffff;
+           box-shadow: 0px 4px 18px rgba(0,0,0,0.12);
+            padding:20px 30px;
+            border-radius: 10px;
+            margin-top: 90px;
+        }
+         #inputtask {
+      width: 70%;
+      padding: 8px;
+      border-radius: 5px;
+      margin-right: 5px;
+      
+    }
+    .add-btn{
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      background: #2a5de8;
+      color:white;
+    }
+    .add-btn:hover{
+        background-color:navy;
+    }
+    ul{
+        list-style: none;
+        margin-top: 25px;
+        padding:0;
+
+    }
+    li{
+         background-color:#eef2ff;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li.completed{
+        background-color:lightgreen;
+        opacity: 0.3;
+    }
+  .complete,.edit,.delete {
+  margin-left: 5px;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color:burlywood;
+}
+.complete:hover,.edit:hover,.delete:hover {
+ background-color:chocolate;
+}
+
+.btns button:hover {
+  opacity: 0.8;
+}
+
+
+    </style>
+</head>
+<body>
+        
+     <div class="container" >
+        <h1><span style="font-weight: bolder;">✅ To-Do List</span></h1>
+        <input type="text" id="inputtask" placeholder="Enter Tasks...">
+        <button class="add-btn" onclick="addtask()">Add</button>
+        <ul id="taskslist"></ul>
+     </div>
+   
+
+
+     <script>
+        displaytasks();
+
+        function addtask(){
+            let input=document.getElementById("inputtask");
+            let taskval =input.value.trim();
+            if(taskval===""){
+                alert("Enter your First  Task!");
+                return;
+            }
+            let newtask= new_task(taskval,false);
+            document.getElementById("taskslist").appendChild(newtask);
+
+
+            savetask();
+            input.value = "";
+        }
+
+        function new_task(task, isdone){
+            let li =document.createElement("li");
+            li.innerHTML= `<span class="t_text">${task}</span>
+                            <button class="complete" onclick="mdone(this)">✔</button>
+                            <button  class="edit" onclick="edittask(this)">✎</button>
+                            <button  class="delete" onclick="deltask(this)">✖</button>`;
+
+            if(isdone){
+                li.classList.add("completed")
+            }
+            return li;
+        }
+
+        function mdone(button){
+                let li=button.parentElement;
+                li.classList.toggle("completed");
+               savetask();
+
+        }
+
+
+        function deltask(button){
+            button.parentElement.remove();
+             savetask();
+        }
+
+
+         function edittask(button){
+            let list=button.parentElement;
+            let list_text =list.querySelector(".t_text");
+            let new_text = prompt("Enter the task you want to add in this place",list_text.innerText);
+
+            if(new_text !==null && new_text.trim()!== ""){
+
+                list_text.innerText =new_text;
+                savetask();
+            }
+         }
+
+       function savetask(){
+        let tasks=[];
+        document.querySelectorAll("#taskslist li").forEach(li=>{tasks.push({
+          
+             list:li.querySelector(".t_text").innerText, done: li.classList.contains("completed")
+
+        });
+            
+        });
+         localStorage.setItem("DOlist", JSON.stringify(tasks));
+       }
+
+
+
+
+       function displaytasks() {
+  let sav_tasks = localStorage.getItem("DOlist");
+  if (! sav_tasks) return;
+
+  let tasksArray = JSON.parse( sav_tasks);
+
+  tasksArray.forEach(task => {
+    let item = new_task(task.list, task.done);
+    document.getElementById("taskslist").appendChild(item);
+  });
+}
+
+
+     </script>
+</body>
+</html>
